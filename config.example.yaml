@@ -1,0 +1,25 @@
+# GA4 設定チェッカー 設定ファイル
+#
+# 使い方: python -m ga4_checker --config config.yaml
+
+# GA4 プロパティID（必須）
+property_id: "123456789"
+
+# サービスアカウントキーのパス（省略時は ADC を使用）
+# credentials: "path/to/service-account-key.json"
+
+# 実行するチェック項目（省略時は全項目）
+# 選択肢: property, events, custom, retention
+checks:
+  - property
+  - events
+  - custom
+  - retention
+
+# --- 定期実行の例 ---
+#
+# crontab に追加（毎週月曜9時に実行し、JSONレポートを保存）:
+#   0 9 * * 1 cd /path/to/project && python -m ga4_checker --config config.yaml -o reports/report_$(date +\%Y\%m\%d).json
+#
+# GitHub Actions での定期実行:
+#   .github/workflows/ga4-audit.yml を参照

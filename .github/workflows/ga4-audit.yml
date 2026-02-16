@@ -1,0 +1,35 @@
+name: GA4 設定監査
+
+on:
+  schedule:
+    # 毎週月曜 09:00 JST (00:00 UTC)
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run GA4 config check
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY_PATH }}
+        run: |
+          python -m ga4_checker \
+            --property-id ${{ vars.GA4_PROPERTY_ID }} \
+            --output report.json
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ga4-audit-report-${{ github.run_number }}
+          path: report.json
+          retention-days: 90
